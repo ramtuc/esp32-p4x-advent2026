@@ -1,4 +1,4 @@
-# esp32-p4x-ev-board-series
+# esp32-p4x-advent2026
 
 Qiita Advent Calendar 2026「ESP32」の ESP32-P4X-Function-EV-Board シリーズのサンプルコードです。
 
