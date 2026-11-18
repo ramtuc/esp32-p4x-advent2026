@@ -1,8 +1,8 @@
 # esp32-p4x-advent2026
 
-Qiita Advent Calendar 2026「ESP32」の連載（ESP32-P4X-Function-EV-Board と ESP32-S3）のサンプルコードです。
+Qiita Advent Calendar 2026「ESP32」に書いた記事（ESP32-P4X-Function-EV-Board と ESP32-S3）のサンプルコードです。
 
-- Qiita 記事（公開予定）: 連載キックオフと開発環境（ESP-IDF v6.0）
+- Qiita 記事（公開予定）: ESP-IDF v6.0.3 で開発環境を作る（ESP32-S3 と ESP32-P4X のマルチターゲット）
 
 ## 動作を確認した環境
 
@@ -18,7 +18,7 @@ Qiita Advent Calendar 2026「ESP32」の連載（ESP32-P4X-Function-EV-Board と
 
 | フォルダ | 内容 | 記事 |
 | --- | --- | --- |
-| `01-intro/hello_world` | ESP-IDF の `hello_world` を、1つのプロジェクトで ESP32-P4 と ESP32-S3 の両方にビルドできるようにしたもの（`CMakePresets.json` と `sdkconfig.defaults.<ターゲット>`） | キックオフと開発環境 |
+| `01-intro/hello_world` | ESP-IDF の `hello_world` を、1つのプロジェクトで ESP32-P4 と ESP32-S3 の両方にビルドできるようにしたもの（`CMakePresets.json` と `sdkconfig.defaults.<ターゲット>`） | ESP-IDF v6.0.3 の開発環境 |
 
 ## ビルドと書き込み
 
