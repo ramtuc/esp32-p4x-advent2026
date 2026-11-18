@@ -10,7 +10,7 @@ Qiita Advent Calendar 2026「ESP32」の連載（ESP32-P4X-Function-EV-Board と
 | --- | --- |
 | ボード | ESP32-P4X-Function-EV-Board（基板のシルクは「ESP32-P4 Function_EV_Board V1.6」）、ESPr Developer S3 Type-C（ESP32-S3-WROOM-1-N16R8） |
 | チップ | ESP32-P4 revision v3.2、Flash 16MB、PSRAM 32MB |
-| ESP-IDF | v6.0.3（`01-intro/hello_world_psram` だけ v5.5.3） |
+| ESP-IDF | v6.0.3 |
 | PC | Windows 11、PowerShell |
 | 接続 | J19（USB Serial/JTAG）の Type-C |
 
@@ -19,7 +19,6 @@ Qiita Advent Calendar 2026「ESP32」の連載（ESP32-P4X-Function-EV-Board と
 | フォルダ | 内容 | 記事 |
 | --- | --- | --- |
 | `01-intro/hello_world` | ESP-IDF の `hello_world` を、1つのプロジェクトで ESP32-P4 と ESP32-S3 の両方にビルドできるようにしたもの（`CMakePresets.json` と `sdkconfig.defaults.<ターゲット>`） | キックオフと開発環境 |
-| `01-intro/hello_world_psram` | ESP-IDF の `examples/get-started/hello_world` に、Flash 16MB と PSRAM を有効にする `sdkconfig.defaults` と、`main/CMakeLists.txt` の依存 `esp_psram` を足したもの | 入門 |
 
 ## ビルドと書き込み
 
