@@ -1,0 +1,5 @@
+# ESP32-P4X-Function-EV-Board（ESP-IDF v6.0.3）
+CONFIG_IDF_TARGET="esp32p4"
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+# CoreMark は 10 秒以上回るので、タスクのウォッチドッグを切る（元の例と同じ）
+CONFIG_ESP_TASK_WDT_INIT=n
