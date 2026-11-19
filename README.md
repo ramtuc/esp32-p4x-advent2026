@@ -5,6 +5,7 @@ Qiita Advent Calendar 2026「ESP32」に書いた記事（ESP32-P4X-Function-EV-
 - Qiita 記事（公開予定）: ESP-IDF v6.0.3 で開発環境を作る（ESP32-S3 と ESP32-P4X のマルチターゲット）
 - Qiita 記事（公開予定）: ESP32-P4X の Hello World と基本入出力（HP/LP GPIO・I2C・SPI・UART）
 - Qiita 記事（公開予定）: ESP32-S3 の極限の省電力と ULP（Deep Sleep とタイマ・GPIO・ULP RISC-V での復帰）
+- Qiita 記事（公開予定）: 産業用バス TWAI/CAN（4 ノードのマルチドロップとバス調停）
 
 ## 動作を確認した環境
 
@@ -30,6 +31,7 @@ Qiita Advent Calendar 2026「ESP32」に書いた記事（ESP32-P4X-Function-EV-
 | `02-basic-io/reset_usj.ttl` | Tera Term で COM を開いたまま RTS でリセットするマクロ（起動ログを頭から見る） | 同上 |
 | `ulp-deep-sleep/sleep_wakeup` | ESP32-S3: Deep Sleep からタイマ（10 秒）と GPIO0（FLASH スイッチ、EXT1）で起こし、起きた理由と眠っていた時間を出す | 極限の省電力＆ULP |
 | `ulp-deep-sleep/ulp_button_count` | ESP32-S3: ULP RISC-V が 20ms ごとに GPIO0 を見て、3 回押されたらメインの CPU を起こす | 同上 |
+| `twai-can/can_node` | ESP32-S3: esp_twai（v6.0）で CAN の 1 マスタ＋スレーブ。受け入れフィルタ、バスオフからの復帰。トランシーバなしのセルフテストも（役割は `sdkconfig.master`・`sdkconfig.slave1`〜`3`） | 産業用バス TWAI/CAN |
 | `06-ethernet-usb/eth_link` | EMAC と IP101（`espressif/ip101`）で Ethernet を起こし、PHY の ID・リンク・DHCP の IP を表示（MAC アドレスは出さない） | 有線通信（Ethernet と USB HS） |
 | `09-ppa/ppa_bench` | PPA と CPU で、PSRAM 上の 1024×600 の画像の回転・拡大縮小・色の変換・塗りつぶしの時間を比べる | ハードウェアアクセラレータ PPA |
 

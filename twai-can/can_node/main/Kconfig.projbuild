@@ -1,0 +1,32 @@
+menu "CAN node"
+
+    choice CAN_NODE_ROLE
+        prompt "Role of this node"
+        default CAN_NODE_ROLE_SELFTEST
+        config CAN_NODE_ROLE_MASTER
+            bool "Master (sends poll 0x100, receives 0x200-0x20F)"
+        config CAN_NODE_ROLE_SLAVE
+            bool "Slave (receives poll 0x100, replies 0x200 + node id)"
+        config CAN_NODE_ROLE_SELFTEST
+            bool "Self test on one board (TX = RX pin, no transceiver)"
+    endchoice
+
+    config CAN_NODE_ID
+        int "Slave node id (1-15)"
+        range 1 15
+        default 1
+        depends on CAN_NODE_ROLE_SLAVE
+
+    config CAN_TX_GPIO
+        int "TX GPIO (to transceiver TXD)"
+        default 4
+
+    config CAN_RX_GPIO
+        int "RX GPIO (from transceiver RXD)"
+        default 5
+
+    config CAN_BITRATE
+        int "Bitrate (bit/s)"
+        default 500000
+
+endmenu
