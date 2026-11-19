@@ -8,3 +8,10 @@ Espressif のコンポーネント `espressif/coremark`（1.1.0~2）の例 `core
 ```powershell
 idf.py -p COM3 flash monitor
 ```
+
+ESP32-S3（ESPr Developer S3 Type-C、240MHz）で同じ物を回すとき:
+
+```powershell
+idf.py -B build_s3 -D SDKCONFIG=build_s3/sdkconfig -D SDKCONFIG_DEFAULTS=sdkconfig.esp32s3 set-target esp32s3 build
+idf.py -B build_s3 -D SDKCONFIG=build_s3/sdkconfig -p COM5 flash monitor
+```
