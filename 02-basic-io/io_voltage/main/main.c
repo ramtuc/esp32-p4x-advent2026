@@ -9,14 +9,31 @@
 #include "esp_err.h"
 #include "driver/gpio.h"
 #include "esp_ldo_regulator.h"
+#include "soc/pmu_struct.h"
 
 #define STAGE1_SEC 30
+
+// 調べる用: LDO の VO3・VO4 のレジスタをそのまま出す（PMU.ext_ldo の添字は VO1=0, VO2=3, VO3=1, VO4=4。hal/ldo_ll.h と同じ）
+static void dump_ldo(const char *tag)
+{
+    const int idx[] = {1, 4};
+    const char *name[] = {"VO3", "VO4"};
+    for (int i = 0; i < 2; i++) {
+        pmu_ext_ldo_reg_t r = PMU.ext_ldo[idx[i]].pmu_ext_ldo;
+        pmu_ext_ldo_ana_reg_t a = PMU.ext_ldo[idx[i]].pmu_ext_ldo_ana;
+        printf("[%s] %s: xpd=%d force_tieh_sel=%d tieh_sel=%d tieh=%d dref=%d mul=%d (reg=0x%08lx ana=0x%08lx)\n",
+               tag, name[i], (int)r.xpd, (int)r.force_tieh_sel, (int)r.tieh_sel, (int)r.tieh, (int)a.dref, (int)a.mul,
+               (unsigned long)r.val, (unsigned long)a.val);
+    }
+}
 
 static const int s_pins[] = {20, 46, 47, 48};  // J1-13, J1-36, J1-37, J1-33
 
 void app_main(void)
 {
     vTaskDelay(pdMS_TO_TICKS(3000));  // USB の再接続を待ってから表示する
+
+    dump_ldo("boot");
 
     uint64_t mask = 0;
     for (int i = 0; i < sizeof(s_pins) / sizeof(s_pins[0]); i++) {
@@ -33,6 +50,7 @@ void app_main(void)
 
     for (int t = STAGE1_SEC; t > 0; t -= 5) {
         printf("stage 1: GPIO20/46/47/48 = High, VO4 untouched  (%d s left)\n", t);
+        dump_ldo("stage 1");
         vTaskDelay(pdMS_TO_TICKS(5000));
     }
 
@@ -43,6 +61,7 @@ void app_main(void)
     };
     ESP_ERROR_CHECK(esp_ldo_acquire_channel(&cfg, &vo4));
     esp_ldo_dump(stdout);
+    dump_ldo("3300mV");
 
     while (1) {
         printf("stage 2: GPIO20/46/47/48 = High, VO4 = 3300 mV\n");
