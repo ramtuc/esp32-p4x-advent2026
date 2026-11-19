@@ -2,11 +2,13 @@
 // TX: GPIO21（J1 の 11 番）、RX: GPIO22（J1 の 12 番）。11 番と 12 番をジャンパ線でつなぐ
 // UART0（GPIO37/38、J1 の 8・10 番）はコンソールなので使わない
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_err.h"
 #include "driver/uart.h"
+#include "driver/gpio.h"
 
 #define PORT   UART_NUM_1
 #define PIN_TX 21
@@ -28,6 +30,9 @@ void app_main(void)
     ESP_ERROR_CHECK(uart_param_config(PORT, &cfg));
     // v6.0 の uart_set_pin は 5 引数（TX・RX・RTS・CTS）と 7 引数（DTR・DSR も）の両方を受ける
     ESP_ERROR_CHECK(uart_set_pin(PORT, PIN_TX, PIN_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
+    // uart_set_pin は GPIO マトリクス経由の RX にプルアップを入れない。線を外すと RX が浮いてノイズを受けるので、
+    // プルアップで止まっている状態（High）にしておく
+    ESP_ERROR_CHECK(gpio_pullup_en(PIN_RX));
 
     for (int n = 1;; n++) {
         char msg[32];
@@ -39,8 +44,13 @@ void app_main(void)
         if (got < 0) {
             got = 0;
         }
-        printf("sent \"%s\"  received %d bytes \"%.*s\"  %s\n", msg, got, got, rx,
-               (got == len && memcmp(msg, rx, len) == 0) ? "OK" : "NG");
+        bool ok = (got == len && memcmp(msg, rx, len) == 0);
+        for (int i = 0; i < got; i++) {
+            if (rx[i] < 0x20 || rx[i] > 0x7e) {
+                rx[i] = '.';  // 化けた文字は . で出す（端末を乱さない）
+            }
+        }
+        printf("sent \"%s\"  received %d bytes \"%.*s\"  %s\n", msg, got, got, rx, ok ? "OK" : "NG");
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
