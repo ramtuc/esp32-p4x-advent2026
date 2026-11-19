@@ -27,6 +27,8 @@ Qiita Advent Calendar 2026「ESP32」に書いた記事（ESP32-P4X-Function-EV-
 | `02-basic-io/uart_echo` | UART1（GPIO21 TX / GPIO22 RX）をジャンパでループバック。RX にプルアップ | 同上 |
 | `02-basic-io/io_voltage` | J1 の GPIO46〜48（VDD_IO_5）を High にして、LDO の VO4 を 3300mV にする前後の電圧を測る | 同上 |
 | `02-basic-io/reset_usj.ttl` | Tera Term で COM を開いたまま RTS でリセットするマクロ（起動ログを頭から見る） | 同上 |
+| `06-ethernet-usb/eth_link` | EMAC と IP101（`espressif/ip101`）で Ethernet を起こし、PHY の ID・リンク・DHCP の IP を表示（MAC アドレスは出さない） | 有線通信（Ethernet と USB HS） |
+| `09-ppa/ppa_bench` | PPA と CPU で、PSRAM 上の 1024×600 の画像の回転・拡大縮小・色の変換・塗りつぶしの時間を比べる | ハードウェアアクセラレータ PPA |
 
 ## ビルドと書き込み
 
