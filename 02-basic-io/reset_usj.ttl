@@ -1,0 +1,7 @@
+; P4X の J19（USB Serial/JTAG）を、COM3 を開いたままリセットする Tera Term マクロ
+; 使い方: Tera Term で COM3 を開いた状態で「コントロール > マクロ」からこのファイルを選ぶ
+; esptool の hard reset と同じ操作（DTR=0、RTS を 100ms だけ 1）。USB は切れないので起動ログの頭から見える
+setdtr 0
+setrts 1
+mpause 100
+setrts 0
