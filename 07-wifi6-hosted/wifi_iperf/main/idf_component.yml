@@ -1,0 +1,6 @@
+dependencies:
+  espressif/esp_wifi_remote: "1.6.5"
+  espressif/esp_hosted: "~2.12.0"
+  # iperf 2 と互換（iperf3 とは話せない）。PC 側は iperf 2 を使う
+  espressif/iperf-cmd: "~1.0.4"
+  esp-qa/ping-cmd: "~1.0.0"

@@ -1,0 +1,3 @@
+# C6 のファーム（esp_hosted 2.12.12 の slave をビルドしたもの）はリポジトリに入れない。README の手順で置く
+components/ota_littlefs/slave_fw_bin/*.bin
+components/ota_partition/slave_fw_bin/*.bin
