@@ -1,0 +1,5 @@
+# ESP32-P4 チップ revision v1.x（v3.0 より前。ESP32-P4-Function-EV-Board v1.3 など）
+# v6.0.3 の既定は v3.1 以上なので、v3.0 より前のチップ向けに切り替える（両方は 1 つのバイナリで動かない）
+CONFIG_IDF_TARGET="esp32p4"
+CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y
+CONFIG_ESP32P4_REV_MIN_100=y

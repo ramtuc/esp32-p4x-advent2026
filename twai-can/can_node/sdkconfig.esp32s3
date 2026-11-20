@@ -1,0 +1,2 @@
+# ESPr Developer S3 Type-C（ESP32-S3-WROOM-1-N16R8）
+CONFIG_IDF_TARGET="esp32s3"

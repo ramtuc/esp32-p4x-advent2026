@@ -1,0 +1,2 @@
+# ESP32-P4 チップ revision v3.x（ESP32-P4X-Function-EV-Board など）。v6.0.3 の既定（v3.1 以上）のまま
+CONFIG_IDF_TARGET="esp32p4"

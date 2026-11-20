@@ -1,4 +1,4 @@
-# ESPr Developer S3 Type-C（ESP32-S3-WROOM-1-N16R8）
-CONFIG_IDF_TARGET="esp32s3"
+# 4 ノード共通（ESPr Developer S3 Type-C・ESP32-P4 のボードとも Flash 16MB）
+# ターゲットとボードは sdkconfig.esp32s3 / sdkconfig.esp32p4 / sdkconfig.esp32p4_rev1 で選ぶ
 CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
 CONFIG_BOOTLOADER_LOG_LEVEL_WARN=y
