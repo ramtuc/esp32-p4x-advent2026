@@ -1,0 +1,48 @@
+menu "wifi_sta (P4X + C6)"
+
+    choice WIFI_STA_SAE_PWE
+        prompt "SAE (WPA3) の PWE の求め方（wifi_sta_config_t.sae_pwe_h2e）"
+        default WIFI_STA_SAE_PWE_HNP
+        help
+            WPA3-Personal（SAE）のパスワード要素の求め方。wifi_config_t を {0} で初期化すると 0（Hunt-and-Peck）になる。
+            ESP-IDF のヘッダの説明の既定は 2（BOTH）。
+        config WIFI_STA_SAE_PWE_HNP
+            bool "0: Hunt-and-Peck（{0} で初期化したときの値）"
+        config WIFI_STA_SAE_PWE_H2E
+            bool "1: Hash-to-Element"
+        config WIFI_STA_SAE_PWE_BOTH
+            bool "2: BOTH"
+    endchoice
+
+    config WIFI_STA_SAE_PWE
+        int
+        default 0 if WIFI_STA_SAE_PWE_HNP
+        default 1 if WIFI_STA_SAE_PWE_H2E
+        default 2 if WIFI_STA_SAE_PWE_BOTH
+
+    choice WIFI_STA_AUTH_THRESHOLD
+        prompt "つなぐ相手の最低の認証方式（wifi_sta_config_t.threshold.authmode）"
+        default WIFI_STA_AUTH_THRESHOLD_OPEN
+        config WIFI_STA_AUTH_THRESHOLD_OPEN
+            bool "OPEN（{0} のまま。パスワードが 8 文字以上なら WPA2 以上として扱われる）"
+        config WIFI_STA_AUTH_THRESHOLD_WPA2
+            bool "WPA2_PSK"
+        config WIFI_STA_AUTH_THRESHOLD_WPA3
+            bool "WPA3_PSK（SAE だけ）"
+    endchoice
+
+    config WIFI_STA_CONNECT_AFTER_SETUP
+        bool "esp_wifi_connect() を、送信出力の設定が終わってから呼ぶ（STA_START のイベントでは呼ばない）"
+        default n
+        help
+            n: WIFI_EVENT_STA_START で esp_wifi_connect() を呼ぶ（ESP-IDF の例と同じ）。
+            このとき P4 のメインのタスクは esp_wifi_set_max_tx_power() などの RPC を C6 に送っている途中で、接続と重なる。
+            y: 送信出力の上限の設定と読み返しが終わってから、メインのタスクで esp_wifi_connect() を呼ぶ。
+
+    config WIFI_STA_DIAG_LOG
+        bool "接続の調査用に ESP-Hosted（P4 側）のログを DEBUG にする"
+        default n
+        help
+            CONFIG_LOG_MAXIMUM_LEVEL_DEBUG も必要。Wi-Fi のドライバ自体は C6 の中で動くので、その詳しいログは C6 の UART に出る（P4 からは見えない）。
+
+endmenu

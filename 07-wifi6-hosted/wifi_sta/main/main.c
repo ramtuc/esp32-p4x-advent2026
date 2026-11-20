@@ -12,6 +12,8 @@
 #include "esp_event.h"
 #include "esp_netif.h"
 #include "esp_wifi.h"
+#include "esp_log.h"
+#include "esp_timer.h"
 #include "nvs_flash.h"
 #include "esp_hosted.h"
 #include "esp_hosted_host_fw_ver.h"
@@ -21,15 +23,42 @@
 static EventGroupHandle_t s_ev;
 
 #ifdef WIFI_SSID
+static int64_t s_connect_us;  // 直前の esp_wifi_connect() の時刻
+
+static const char *auth_name(wifi_auth_mode_t m)
+{
+    switch (m) {
+    case WIFI_AUTH_OPEN: return "OPEN";
+    case WIFI_AUTH_WPA2_PSK: return "WPA2_PSK";
+    case WIFI_AUTH_WPA3_PSK: return "WPA3_PSK (SAE)";
+    case WIFI_AUTH_WPA2_WPA3_PSK: return "WPA2_WPA3_PSK";
+    default: return "other";
+    }
+}
+
+static void connect_now(void)
+{
+    s_connect_us = esp_timer_get_time();
+    esp_wifi_connect();
+}
+
 static void on_event(void *arg, esp_event_base_t base, int32_t id, void *data)
 {
     if (base == WIFI_EVENT && id == WIFI_EVENT_STA_START) {
-        esp_wifi_connect();
+#ifndef CONFIG_WIFI_STA_CONNECT_AFTER_SETUP
+        connect_now();
+#endif
     } else if (base == WIFI_EVENT && id == WIFI_EVENT_STA_DISCONNECTED) {
         wifi_event_sta_disconnected_t *d = data;
-        printf("disconnected (reason %d), retry\n", d->reason);
+        // SSID・BSSID は出さない。理由・その時の RSSI・connect からの時間だけ
+        printf("disconnected (reason %d, rssi %d dBm, %lld ms after connect), retry\n", d->reason, d->rssi,
+               (esp_timer_get_time() - s_connect_us) / 1000);
         vTaskDelay(pdMS_TO_TICKS(2000));
-        esp_wifi_connect();
+        connect_now();
+    } else if (base == WIFI_EVENT && id == WIFI_EVENT_STA_CONNECTED) {
+        wifi_event_sta_connected_t *c = data;
+        printf("associated: authmode %s, %lld ms after connect\n", auth_name(c->authmode),
+               (esp_timer_get_time() - s_connect_us) / 1000);
     } else if (base == IP_EVENT && id == IP_EVENT_STA_GOT_IP) {
         xEventGroupSetBits(s_ev, GOT_IP);
     }
@@ -76,9 +105,26 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, on_event, NULL));
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, on_event, NULL));
 
+#ifdef CONFIG_WIFI_STA_DIAG_LOG
+    // 調査用: P4 側の ESP-Hosted のログを DEBUG に（Wi-Fi のドライバのログは C6 の UART に出るので見えない）
+    const char *tags[] = {"RPC_WRAP", "rpc_core", "rpc_evt", "rpc_rsp", "rpc_req", "rpc_api", "H_API"};
+    for (int i = 0; i < sizeof(tags) / sizeof(tags[0]); i++) {
+        esp_log_level_set(tags[i], ESP_LOG_DEBUG);
+    }
+#endif
+
     wifi_config_t wc = {0};
     strncpy((char *)wc.sta.ssid, WIFI_SSID, sizeof(wc.sta.ssid));
     strncpy((char *)wc.sta.password, WIFI_PASS, sizeof(wc.sta.password));
+    // WPA3（SAE）の設定。既定は {0} のまま（Hunt-and-Peck、しきい値 OPEN）。Kconfig で変えて比べる
+    wc.sta.sae_pwe_h2e = CONFIG_WIFI_STA_SAE_PWE;
+#if CONFIG_WIFI_STA_AUTH_THRESHOLD_WPA2
+    wc.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
+#elif CONFIG_WIFI_STA_AUTH_THRESHOLD_WPA3
+    wc.sta.threshold.authmode = WIFI_AUTH_WPA3_PSK;
+#endif
+    printf("sta config: sae_pwe_h2e %d, threshold %s, pmf capable %d required %d\n", wc.sta.sae_pwe_h2e,
+           auth_name(wc.sta.threshold.authmode), wc.sta.pmf_cfg.capable, wc.sta.pmf_cfg.required);
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wc));
     ESP_ERROR_CHECK(esp_wifi_start());
@@ -90,6 +136,10 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_wifi_set_max_tx_power(60));
     esp_wifi_get_max_tx_power(&pwr);
     printf("max tx power: %.2f dBm\n", pwr * 0.25);
+#ifdef CONFIG_WIFI_STA_CONNECT_AFTER_SETUP
+    // 送信出力の設定の RPC が終わってから接続を始める
+    connect_now();
+#endif
 
     xEventGroupWaitBits(s_ev, GOT_IP, pdFALSE, pdTRUE, portMAX_DELAY);
     esp_netif_ip_info_t ip;
