@@ -97,5 +97,19 @@ void app_main(void)
     printf("connected: channel %d, rssi %d dBm, phy 11b%d 11g%d 11n%d 11ax%d\n", ap.primary, ap.rssi,
            ap.phy_11b, ap.phy_11g, ap.phy_11n, ap.phy_11ax);
     printf("got IPv4 address: %s\n", ip.ip.addr != 0 ? "yes" : "no");
+
+    // phy_11ax はアクセスポイントの対応。実際にどの規格で話しているかは、ネゴシエーションの結果を読む
+    wifi_phy_mode_t mode;
+    esp_err_t err = esp_wifi_sta_get_negotiated_phymode(&mode);
+    if (err == ESP_OK) {
+        printf("negotiated phy mode: %s\n", mode == WIFI_PHY_MODE_HE20   ? "11ax (HE20)"
+                                            : mode == WIFI_PHY_MODE_HT40 ? "11n (HT40)"
+                                            : mode == WIFI_PHY_MODE_HT20 ? "11n (HT20)"
+                                            : mode == WIFI_PHY_MODE_11G  ? "11g"
+                                            : mode == WIFI_PHY_MODE_11B  ? "11b"
+                                                                         : "other");
+    } else {
+        printf("negotiated phy mode: not available (%s)\n", esp_err_to_name(err));
+    }
 #endif
 }
