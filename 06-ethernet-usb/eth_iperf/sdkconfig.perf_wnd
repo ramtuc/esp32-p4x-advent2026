@@ -1,0 +1,25 @@
+# ESP32-P4X-Function-EV-Board（ESP-IDF v6.0.3）
+CONFIG_IDF_TARGET="esp32p4"
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_ETH_ENABLED=y
+CONFIG_ETH_USE_ESP32_EMAC=y
+# iperf のコンソールは J19（USB Serial/JTAG）に出す
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=7168
+
+# --- 性能の設定。ESP-IDF v6.0.3 の examples/ethernet/iperf の sdkconfig.defaults と同じ ---
+# FreeRTOS をコア 0 だけで動かす（lwIP と iperf は順に待ち合うので、1 コアでも遅くならない、と例のコメントにある）
+CONFIG_FREERTOS_UNICORE=y
+CONFIG_FREERTOS_IN_IRAM=y
+# ウォッチドッグを切る
+CONFIG_ESP_INT_WDT=n
+CONFIG_ESP_TASK_WDT_EN=n
+# lwIP と Ethernet のドライバを IRAM に置く
+CONFIG_LWIP_IRAM_OPTIMIZATION=y
+CONFIG_LWIP_EXTRA_IRAM_OPTIMIZATION=y
+CONFIG_ETH_IRAM_OPTIMIZATION=y
+
+# --- 比べる設定 W: TCP の受信の窓だけを大きくする ---
+# ESP-IDF の既定は 5760（MSS 1440 の 4 つ分）。上限は 65535（窓のスケールを使わないとき）。
+# components/lwip/Kconfig の help: 受信の窓を小さくすると RAM は減るが、速さは大きく下がる
+CONFIG_LWIP_TCP_WND_DEFAULT=65534
