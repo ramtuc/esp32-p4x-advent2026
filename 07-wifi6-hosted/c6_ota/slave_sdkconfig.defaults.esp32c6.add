@@ -1,0 +1,4 @@
+# C6 の slave（esp_hosted 2.12.12 の slave/）の sdkconfig.defaults.esp32c6 の末尾に足した設定
+# 技適未取得機器を用いた実験等の特例で使うので、ホストのアプリに関係なく、C6 側でも Wi-Fi の送信出力の上限を +15dBm にする
+# （ホストの esp_wifi_set_max_tx_power(60) は esp_wifi_start() の後なので、その前の短い間も C6 の上限で抑える）
+CONFIG_ESP_PHY_MAX_WIFI_TX_POWER=15

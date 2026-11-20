@@ -21,3 +21,10 @@
 3. `c6_ota` をビルドして P4 に書き込む。起動すると P4 が C6 にファームを送り、P4 が再起動する。再起動後に `Slave firmware version: 2.12.12` と `OTA not required` が出れば完了
 
 注意: 新しいファームが SDIO で起動しないと P4 からは戻せない。そのときは基板の PROG_C6 ヘッダに ESP-Prog などをつないで C6 に直接書く。工場出荷の C6 のファームはバックアップできないので、自己責任で。
+
+### C6 側の送信出力の上限
+
+C6 の `slave` をビルドするときに、`slave/sdkconfig.defaults.esp32c6` の末尾へ `c6_ota/slave_sdkconfig.defaults.esp32c6.add` の中身（`CONFIG_ESP_PHY_MAX_WIFI_TX_POWER=15`）を足す。ホストの `esp_wifi_set_max_tx_power()` は `esp_wifi_start()` の後なので、その前も C6 側で +15dBm 以下にするため。`wifi_sta` は、ホストが上限をかける前の値（C6 のファームの上限）も表示する。
+
+同じ版（2.12.12）の C6 に設定違いのファームを入れ直すときは、版の確認を切った `sdkconfig.reota` でビルドする:
+`idf.py -B build_reota -D SDKCONFIG=build_reota/sdkconfig -D SDKCONFIG_DEFAULTS=sdkconfig.reota build`

@@ -82,9 +82,12 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wc));
     ESP_ERROR_CHECK(esp_wifi_start());
+    int8_t pwr = 0;
+    // ホストが上限をかける前の、C6 のファームの上限（slave の CONFIG_ESP_PHY_MAX_WIFI_TX_POWER）
+    esp_wifi_get_max_tx_power(&pwr);
+    printf("max tx power (C6 firmware, before set): %.2f dBm\n", pwr * 0.25);
     // 送信出力の上限を +15dBm に（単位は 0.25dBm。60 = 15dBm）
     ESP_ERROR_CHECK(esp_wifi_set_max_tx_power(60));
-    int8_t pwr = 0;
     esp_wifi_get_max_tx_power(&pwr);
     printf("max tx power: %.2f dBm\n", pwr * 0.25);
 
