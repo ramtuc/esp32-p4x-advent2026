@@ -1,0 +1,6 @@
+dependencies:
+  idf: '>=6.0'
+  # ESP-IDF v6.0 から IDF 本体の外（コンポーネントレジストリ）になった IP101 のドライバ
+  espressif/ip101: '^1.1.0'
+  # iperf 2 と互換（iperf3 とは話せない）。PC 側は iperf 2 を使う
+  espressif/iperf-cmd: '~1.0.4'
