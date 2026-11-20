@@ -28,3 +28,18 @@ C6 の `slave` をビルドするときに、`slave/sdkconfig.defaults.esp32c6` 
 
 同じ版（2.12.12）の C6 に設定違いのファームを入れ直すときは、版の確認を切った `sdkconfig.reota` でビルドする:
 `idf.py -B build_reota -D SDKCONFIG=build_reota/sdkconfig -D SDKCONFIG_DEFAULTS=sdkconfig.reota build`
+
+## wifi_iperf の性能の設定
+
+ESP-Hosted 2.12.12 の `docs/performance_optimization.md`（§1.1 P4＋C6、§2.1 SDIO）の設定を段階的に足したもの。おすすめは `sdkconfig.perf_c`（SDIO は既定の 40MHz）。
+
+| ファイル | 中身 |
+| --- | --- |
+| `sdkconfig.defaults` | 既定（lwIP の TCP の窓・送信バッファ 5760） |
+| `sdkconfig.perf_b` | ＋ lwIP の TCP の窓・送信バッファ 65534、mbox 64、SACK |
+| `sdkconfig.perf_c` | ＋ Wi-Fi のバッファ（RX 16/64、TX 64）と BA の窓 32 |
+| `sdkconfig.perf_d` | ＋ SDIO 50MHz |
+
+ビルド: `idf.py -B build_c -D SDKCONFIG=build_c/sdkconfig -D SDKCONFIG_DEFAULTS=sdkconfig.perf_c build`
+
+実測（11/21、ch 5、Mbit/s）: TCP は既定 約 13 → C で PC→P4 34〜37・P4→PC 約 42。UDP は C で PC→P4 48〜50・P4→PC 51〜52（PC で受けた量）。D は C と変わらない。
