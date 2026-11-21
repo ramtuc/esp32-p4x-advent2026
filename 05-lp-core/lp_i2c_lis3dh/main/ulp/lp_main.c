@@ -32,6 +32,13 @@ volatile int32_t ax_mg, ay_mg, az_mg;
 volatile uint32_t tilted;
 volatile uint32_t notify;  // 0 以外の間は HP を起こし続ける。HP が読んだら 0 に戻す
 
+// 「傾いた」「戻った」の記録（最新の 16 件。HP が起きたときにまとめて表示する）
+#define EV_MAX 16
+volatile uint32_t ev_n;            // これまでの件数
+volatile uint32_t ev_run[EV_MAX];  // そのときの run_count
+volatile int32_t ev_x[EV_MAX], ev_y[EV_MAX], ev_z[EV_MAX];
+volatile uint32_t ev_tilt[EV_MAX]; // 1 = 傾いた、0 = 水平に戻った
+
 static int32_t iabs(int32_t v) { return v < 0 ? -v : v; }
 
 static esp_err_t write_reg(uint8_t reg, uint8_t val)
@@ -124,8 +131,17 @@ int main(void)
             if (sensor_ready == 1) {
                 sensor_ready = 2;  // 最初の値: 置いたときの値として HP に知らせる
                 notify = NOTIFY_READY;
-            } else if (now && !tilted) {
-                notify = NOTIFY_TILT;  // 傾いていない → 傾いた、のときだけ
+            } else if (now != tilted) {
+                uint32_t i = ev_n % EV_MAX;
+                ev_run[i] = run_count;
+                ev_x[i] = ax_mg;
+                ev_y[i] = ay_mg;
+                ev_z[i] = az_mg;
+                ev_tilt[i] = now;
+                ev_n++;
+                if (now) {
+                    notify = NOTIFY_TILT;  // 傾いていない → 傾いた、のときだけ起こす
+                }
             }
             tilted = now;
         }
