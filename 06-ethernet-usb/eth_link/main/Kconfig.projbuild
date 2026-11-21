@@ -1,0 +1,18 @@
+menu "eth_link"
+
+    config ETH_LINK_WATCH
+        bool "Keep running and log every link change (cable plug/unplug test)"
+        default n
+        help
+            n: read BMSR 4 times every 5 s, then print "done" (about 25 s).
+            y: never stop. Poll BMSR every ETH_LINK_POLL_MS and print it only when
+               it changes, and log ETHERNET_EVENT_CONNECTED/DISCONNECTED and
+               IP_EVENT_ETH_GOT_IP/LOST_IP with the BMSR at that moment.
+
+    config ETH_LINK_POLL_MS
+        int "BMSR poll interval in watch mode (ms)"
+        depends on ETH_LINK_WATCH
+        range 10 5000
+        default 100
+
+endmenu

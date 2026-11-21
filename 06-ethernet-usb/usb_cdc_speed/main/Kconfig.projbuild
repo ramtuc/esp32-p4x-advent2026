@@ -1,0 +1,7 @@
+menu "usb_cdc_speed"
+
+    config USB_SPEED_USE_FS
+        bool "Use the Full-Speed USB OTG (J20) instead of the High-Speed one"
+        default n
+
+endmenu
