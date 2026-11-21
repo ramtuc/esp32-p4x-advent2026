@@ -116,12 +116,20 @@ void app_main(void)
     wifi_config_t wc = {0};
     strncpy((char *)wc.sta.ssid, WIFI_SSID, sizeof(wc.sta.ssid));
     strncpy((char *)wc.sta.password, WIFI_PASS, sizeof(wc.sta.password));
-    // WPA3（SAE）の設定。既定は {0} のまま（Hunt-and-Peck、しきい値 OPEN）。Kconfig で変えて比べる
+    // WPA3（SAE）の設定。既定は {0} のまま（PWE 0 = UNSPECIFIED、しきい値 OPEN）。Kconfig で変えて比べる
     wc.sta.sae_pwe_h2e = CONFIG_WIFI_STA_SAE_PWE;
 #if CONFIG_WIFI_STA_AUTH_THRESHOLD_WPA2
     wc.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
 #elif CONFIG_WIFI_STA_AUTH_THRESHOLD_WPA3
     wc.sta.threshold.authmode = WIFI_AUTH_WPA3_PSK;
+#endif
+#ifdef CONFIG_WIFI_STA_PMF_REQUIRED
+    wc.sta.pmf_cfg.required = true;
+#endif
+#if CONFIG_WIFI_STA_FAILURE_RETRY_CNT > 0
+    // 失敗を隠すだけ（ドライバの中でやり直す）。全チャンネルのスキャンが条件
+    wc.sta.scan_method = WIFI_ALL_CHANNEL_SCAN;
+    wc.sta.failure_retry_cnt = CONFIG_WIFI_STA_FAILURE_RETRY_CNT;
 #endif
     printf("sta config: sae_pwe_h2e %d, threshold %s, pmf capable %d required %d\n", wc.sta.sae_pwe_h2e,
            auth_name(wc.sta.threshold.authmode), wc.sta.pmf_cfg.capable, wc.sta.pmf_cfg.required);
@@ -164,5 +172,11 @@ void app_main(void)
     } else {
         printf("negotiated phy mode: not available (%s)\n", esp_err_to_name(err));
     }
+#ifdef CONFIG_WIFI_STA_DISCONNECT_AT_END
+    // 再起動の前にアクセスポイントから抜けておく（切り分け用）。この後の切断のイベントでつなぎ直さないように、ハンドラを外す
+    esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, on_event);
+    esp_wifi_disconnect();
+    printf("left the AP (esp_wifi_disconnect)\n");
+#endif
 #endif
 }

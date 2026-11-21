@@ -2,23 +2,26 @@ menu "wifi_sta (P4X + C6)"
 
     choice WIFI_STA_SAE_PWE
         prompt "SAE (WPA3) の PWE の求め方（wifi_sta_config_t.sae_pwe_h2e）"
-        default WIFI_STA_SAE_PWE_HNP
+        default WIFI_STA_SAE_PWE_UNSPECIFIED
         help
-            WPA3-Personal（SAE）のパスワード要素の求め方。wifi_config_t を {0} で初期化すると 0（Hunt-and-Peck）になる。
-            ESP-IDF のヘッダの説明の既定は 2（BOTH）。
+            WPA3-Personal（SAE）のパスワード要素の求め方。ESP-IDF v6.0.3 の wifi_sae_pwe_method_t は
+            0 UNSPECIFIED・1 HUNT_AND_PECK・2 HASH_TO_ELEMENT・3 BOTH。wifi_config_t を {0} で初期化すると 0（UNSPECIFIED）。
+        config WIFI_STA_SAE_PWE_UNSPECIFIED
+            bool "0: UNSPECIFIED（{0} で初期化したときの値）"
         config WIFI_STA_SAE_PWE_HNP
-            bool "0: Hunt-and-Peck（{0} で初期化したときの値）"
+            bool "1: Hunt-and-Peck"
         config WIFI_STA_SAE_PWE_H2E
-            bool "1: Hash-to-Element"
+            bool "2: Hash-to-Element"
         config WIFI_STA_SAE_PWE_BOTH
-            bool "2: BOTH"
+            bool "3: BOTH"
     endchoice
 
     config WIFI_STA_SAE_PWE
         int
-        default 0 if WIFI_STA_SAE_PWE_HNP
-        default 1 if WIFI_STA_SAE_PWE_H2E
-        default 2 if WIFI_STA_SAE_PWE_BOTH
+        default 0 if WIFI_STA_SAE_PWE_UNSPECIFIED
+        default 1 if WIFI_STA_SAE_PWE_HNP
+        default 2 if WIFI_STA_SAE_PWE_H2E
+        default 3 if WIFI_STA_SAE_PWE_BOTH
 
     choice WIFI_STA_AUTH_THRESHOLD
         prompt "つなぐ相手の最低の認証方式（wifi_sta_config_t.threshold.authmode）"
@@ -30,6 +33,26 @@ menu "wifi_sta (P4X + C6)"
         config WIFI_STA_AUTH_THRESHOLD_WPA3
             bool "WPA3_PSK（SAE だけ）"
     endchoice
+
+    config WIFI_STA_PMF_REQUIRED
+        bool "PMF（管理フレームの保護）を必須にする（wifi_sta_config_t.pmf_cfg.required）"
+        default n
+        help
+            ESP-IDF v6 では pmf_cfg.capable は非推奨で、内部で常に true。required を true にすると PMF の無い AP にはつながらない。
+
+    config WIFI_STA_FAILURE_RETRY_CNT
+        int "ドライバの中で接続をやり直す回数（wifi_sta_config_t.failure_retry_cnt。0 = 使わない）"
+        default 0
+        range 0 10
+        help
+            scan_method を WIFI_ALL_CHANNEL_SCAN にしたときだけ効く。失敗をアプリに見せずにドライバの中でやり直すだけなので、原因の対策ではない。
+
+    config WIFI_STA_DISCONNECT_AT_END
+        bool "表示が終わったら esp_wifi_disconnect() でアクセスポイントから抜けておく"
+        default n
+        help
+            再起動の前に、アクセスポイントに切断を知らせておく（PMF のときは保護された切断のフレーム）。
+            アクセスポイントに前の接続が残っていると、再起動した直後の認証が断られることがある（esp-idf の issue #10470 の説明）。その切り分け用。
 
     config WIFI_STA_CONNECT_AFTER_SETUP
         bool "esp_wifi_connect() を、送信出力の設定が終わってから呼ぶ（STA_START のイベントでは呼ばない）"

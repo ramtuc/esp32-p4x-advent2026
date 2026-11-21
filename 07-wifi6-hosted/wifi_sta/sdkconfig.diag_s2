@@ -5,5 +5,5 @@ CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
 CONFIG_SLAVE_IDF_TARGET_ESP32C6=y
 CONFIG_ESP_HOSTED_P4_DEV_BOARD_FUNC_BOARD=y
 
-# --- 接続の調査 s2: SAE の PWE を Hash-to-Element だけ ---
-CONFIG_WIFI_STA_SAE_PWE_H2E=y
+# --- 接続の調査 s2: SAE の PWE を 1（Hunt-and-Peck）。11/21 に測った値（当時は H2E と書き間違えていた） ---
+CONFIG_WIFI_STA_SAE_PWE_HNP=y
