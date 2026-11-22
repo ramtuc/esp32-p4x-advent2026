@@ -106,7 +106,10 @@ static void mic_task(void *arg)
 
         /* 32 ビットの上 24 ビットが音。-1〜1 の float に直し、直流（平均）を引いて窓をかける */
         float mean = 0;
+        int32_t rmin = INT32_MAX, rmax = INT32_MIN;   /* 配線の確かめ用: 読んだ値の範囲 */
         for (int i = 0; i < N; i++) {
+            if (s_raw[i] < rmin) { rmin = s_raw[i]; }
+            if (s_raw[i] > rmax) { rmax = s_raw[i]; }
             s_fc[2 * i] = (float)(s_raw[i] >> 8) * (1.0f / 8388608.0f);
             mean += s_fc[2 * i];
         }
@@ -141,10 +144,11 @@ static void mic_task(void *arg)
         }
         const uint32_t t3 = esp_cpu_get_cycle_count();
 
-        printf("blk=%" PRIu32 " peak=%.1fHz bin=%d level=%.1fdBFS proc=%" PRIu32 "us fft=%" PRIu32 "us block=%dus ovf=%" PRIu32 "\n",
+        printf("blk=%" PRIu32 " peak=%.1fHz bin=%d level=%.1fdBFS proc=%" PRIu32 "us fft=%" PRIu32 "us block=%dus ovf=%" PRIu32 " raw=%" PRId32 "..%" PRId32 "\n",
                blk, (k + delta) * FS / (float)N, k,
                20.0f * log10f(peak_abs + 1e-12f),
-               (t3 - t0) / mhz, (t2 - t1) / mhz, (int)(1000000LL * N / FS), s_ovf);
+               (t3 - t0) / mhz, (t2 - t1) / mhz, (int)(1000000LL * N / FS), s_ovf,
+               rmin >> 8, rmax >> 8);
     }
 }
 
