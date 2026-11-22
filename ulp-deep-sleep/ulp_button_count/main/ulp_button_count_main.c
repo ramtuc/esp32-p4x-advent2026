@@ -10,6 +10,8 @@
  */
 #include <stdio.h>
 #include <inttypes.h>
+#include <sys/time.h>
+#include "esp_attr.h"
 #include "esp_sleep.h"
 #include "esp_system.h"
 #include "driver/rtc_io.h"
@@ -24,6 +26,10 @@
 
 extern const uint8_t ulp_main_bin_start[] asm("_binary_ulp_main_bin_start");
 extern const uint8_t ulp_main_bin_end[]   asm("_binary_ulp_main_bin_end");
+
+/* 眠りに入った時刻と、そのときの ULP の run_count（Deep Sleep の間も消えない） */
+static RTC_DATA_ATTR struct timeval s_sleep_enter;
+static RTC_DATA_ATTR uint32_t s_run_at_sleep;
 
 static void start_ulp(void)
 {
@@ -41,6 +47,8 @@ static void start_ulp(void)
 
 void app_main(void)
 {
+    struct timeval now;
+    gettimeofday(&now, NULL);
     uint32_t causes = esp_sleep_get_wakeup_causes();
 
     if (esp_reset_reason() != ESP_RST_DEEPSLEEP) {
@@ -58,6 +66,15 @@ void app_main(void)
     printf("ULP run_count = %" PRIu32 ", press_count = %" PRIu32 " (wake at %" PRIu32 "), low_samples = %" PRIu32 "\n",
            ulp_run_count, ulp_press_count, ulp_wake_presses, ulp_low_samples);
 
+    if (esp_reset_reason() == ESP_RST_DEEPSLEEP) {
+        /* 眠っていた時間と、その間に ULP が起こされた回数から、ULP の間隔を出す */
+        int64_t slept_us = (now.tv_sec - s_sleep_enter.tv_sec) * 1000000LL
+                         + (now.tv_usec - s_sleep_enter.tv_usec);
+        uint32_t runs = ulp_run_count - s_run_at_sleep;
+        printf("slept %lld ms, ULP ran %" PRIu32 " times -> %lld us per run\n",
+               slept_us / 1000, runs, runs ? slept_us / runs : 0);
+    }
+
     if (causes & BIT(ESP_SLEEP_WAKEUP_ULP)) {
         ulp_press_count = 0;   /* 次の 3 回を数え直す */
     }
@@ -72,5 +89,8 @@ void app_main(void)
     printf("enter deep sleep (ULP keeps running)\n");
     fflush(stdout);
     vTaskDelay(pdMS_TO_TICKS(50));
+
+    gettimeofday(&s_sleep_enter, NULL);
+    s_run_at_sleep = ulp_run_count;
     esp_deep_sleep_start();
 }
