@@ -6,7 +6,7 @@ Qiita Advent Calendar 2026「ESP32」に書いた記事（ESP32-P4X-Function-EV-
 - Qiita 記事（公開予定）: ESP32-P4X の Hello World と基本入出力（HP/LP GPIO・I2C・SPI・UART）
 - Qiita 記事（公開予定）: ESP32-S3 の極限の省電力と ULP（Deep Sleep とタイマ・GPIO・ULP RISC-V での復帰）
 - Qiita 記事（公開予定）: 産業用バス TWAI/CAN（4 ノードのマルチドロップとバス調停）
-- Qiita 記事（公開予定）: 【ESP32-S3 vs ESP32-P4】ESP-DSP で FFT の速さを測る
+- Qiita 記事（公開予定）: 【ESP32-S3 vs ESP32-P4】ESP-DSP で FFT の速さを測る：最適化版とベクトル命令の効き目、公表値とのずれの理由まで
 
 ## 動作を確認した環境
 
@@ -35,8 +35,6 @@ Qiita Advent Calendar 2026「ESP32」に書いた記事（ESP32-P4X-Function-EV-
 | `twai-can/can_node` | ESP32-S3 と ESP32-P4: esp_twai（v6.0）で CAN の 1 マスタ＋スレーブ。受け入れフィルタ、バスオフからの復帰。トランシーバなしのセルフテストも（ボードは `sdkconfig.esp32s3`・`sdkconfig.esp32p4`・`sdkconfig.esp32p4_rev1`、役割は `sdkconfig.master`・`sdkconfig.slave1`〜`3`。下の「can_node のビルド」） | 産業用バス TWAI/CAN |
 | `fft-s3-vs-p4/fft_bench` | ESP-DSP（1.8.2）の FFT（fc32 基数 2・4、sc16 基数 2、C の版と最適化版）のサイクル数を、合成の sin 波で 1024／4096 点。S3 と P4 のプリセット | ESP-DSP で FFT の速さを測る |
 | `fft-s3-vs-p4/fft2r_check` | dsps_fft2r_fc32（1024 点）のサイクル数を、条件（割り込み・計る順・データと表の置き場所・クロック・入力の値）を 1 つずつ変えて計る。公表値とのずれを調べる | ESP-DSP で FFT の速さを測る |
-| `fft-s3-vs-p4/mic_fft` | I2S の MEMS マイク（Adafruit ICS-43434）の音を 48kHz で取り込み、4096 点の FFT でいちばん強い周波数と処理の時間を出す。S3 と P4 のプリセット | ESP-DSP で FFT の速さを測る |
-| `fft-s3-vs-p4/tools/tone_sweep.py` | PC のスピーカーから周波数の分かっている sin 波を鳴らし、mic_fft の出力と比べる（Windows、標準ライブラリ＋pyserial） | ESP-DSP で FFT の速さを測る |
 | `06-ethernet-usb/eth_link` | EMAC と IP101（`espressif/ip101`）で Ethernet を起こし、PHY の ID・リンク・DHCP の IP を表示（MAC アドレスは出さない） | 有線通信（Ethernet と USB HS） |
 | `06-ethernet-usb/eth_iperf` | Ethernet（EMAC と IP101）で IP アドレスを取り、J19 に iperf のコンソール（`espressif/iperf-cmd`、iperf 2 と互換）を開く。速さの設定は ESP-IDF の `examples/ethernet/iperf` と同じ | 有線通信（Ethernet と USB HS） |
 | `09-ppa/ppa_bench` | PPA と CPU で、PSRAM 上の 1024×600 の画像の回転・拡大縮小・色の変換・塗りつぶしの時間を比べる | ハードウェアアクセラレータ PPA |
