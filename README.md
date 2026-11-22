@@ -6,7 +6,7 @@ Qiita Advent Calendar 2026「ESP32」に書いた記事（ESP32-P4X-Function-EV-
 - Qiita 記事（公開予定）: ESP32-P4X の Hello World と基本入出力（HP/LP GPIO・I2C・SPI・UART）
 - Qiita 記事（公開予定）: ESP32-S3 の極限の省電力と ULP（Deep Sleep とタイマ・GPIO・ULP RISC-V での復帰）
 - Qiita 記事（公開予定）: 産業用バス TWAI/CAN（4 ノードのマルチドロップとバス調停）
-- Qiita 記事（公開予定）: 【ESP32-S3 vs ESP32-P4】ESP-DSP で FFT の速さを測る：最適化版とベクトル命令の効き目、公表値とのずれの理由まで
+- Qiita 記事（公開予定）: 【ESP32-S3 vs ESP32-P4】ESP-DSP で FFT の速さを測る：最適化版とベクトル命令の効き目、公表値とのずれの調査まで
 
 ## 動作を確認した環境
 
