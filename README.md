@@ -4,7 +4,7 @@ Qiita Advent Calendar 2026「ESP32」に書いた記事（ESP32-P4X-Function-EV-
 
 - Qiita 記事（公開予定）: ESP-IDF v6.0.3 で開発環境を作る（ESP32-S3 と ESP32-P4X のマルチターゲット）
 - Qiita 記事（公開予定）: ESP32-P4X の Hello World と基本入出力（HP/LP GPIO・I2C・SPI・UART）
-- Qiita 記事（公開予定）: ESP32-S3 の極限の省電力と ULP（Deep Sleep とタイマ・GPIO・ULP RISC-V での復帰）
+- Qiita 記事（公開予定）: 【ESP32-S3】Deep Sleep と ULP RISC-V：タイマ・ボタン・加速度センサ LIS3DH の割り込みで起こす
 - Qiita 記事（公開予定）: 産業用バス TWAI/CAN（4 ノードのマルチドロップとバス調停）
 - Qiita 記事（公開予定）: 【ESP32-S3 vs ESP32-P4】ESP-DSP で FFT の速さを測る：最適化版とベクトル命令の効き目、公表値とのずれの調査まで
 
@@ -30,7 +30,7 @@ Qiita Advent Calendar 2026「ESP32」に書いた記事（ESP32-P4X-Function-EV-
 | `02-basic-io/uart_echo` | UART1（GPIO21 TX / GPIO22 RX）をジャンパでループバック。RX にプルアップ | 同上 |
 | `02-basic-io/io_voltage` | J1 の GPIO46〜48（VDD_IO_5）を High にして、LDO の VO4 を 3300mV にする前後の電圧を測る | 同上 |
 | `02-basic-io/reset_usj.ttl` | Tera Term で COM を開いたまま RTS でリセットするマクロ（起動ログを頭から見る） | 同上 |
-| `ulp-deep-sleep/sleep_wakeup` | ESP32-S3: Deep Sleep からタイマ（10 秒）と GPIO0（FLASH スイッチ、EXT1）で起こし、起きた理由と眠っていた時間を出す | 極限の省電力＆ULP |
+| `ulp-deep-sleep/sleep_wakeup` | ESP32-S3: Deep Sleep からタイマ（10 秒）と GPIO0（FLASH スイッチ、EXT1）で起こし、起きた理由と眠っていた時間を出す | Deep Sleep と ULP RISC-V |
 | `ulp-deep-sleep/ulp_button_count` | ESP32-S3: ULP RISC-V が 20ms ごとに GPIO0 を見て、3 回押されたらメインの CPU を起こす | 同上 |
 | `ulp-deep-sleep/lis3dh_wakeup` | ESP32-S3: LIS3DH（I2C）に動きの検知を INT1 に出す設定を入れ、INT1（EXT1）・GPIO0（EXT0）・タイマで Deep Sleep から起こす | 同上 |
 | `twai-can/can_node` | ESP32-S3 と ESP32-P4: esp_twai（v6.0）で CAN の 1 マスタ＋スレーブ。受け入れフィルタ、バスオフからの復帰。トランシーバなしのセルフテストも（ボードは `sdkconfig.esp32s3`・`sdkconfig.esp32p4`・`sdkconfig.esp32p4_rev1`、役割は `sdkconfig.master`・`sdkconfig.slave1`〜`3`。下の「can_node のビルド」） | 産業用バス TWAI/CAN |
