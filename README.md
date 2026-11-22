@@ -32,6 +32,7 @@ Qiita Advent Calendar 2026「ESP32」に書いた記事（ESP32-P4X-Function-EV-
 | `02-basic-io/reset_usj.ttl` | Tera Term で COM を開いたまま RTS でリセットするマクロ（起動ログを頭から見る） | 同上 |
 | `ulp-deep-sleep/sleep_wakeup` | ESP32-S3: Deep Sleep からタイマ（10 秒）と GPIO0（FLASH スイッチ、EXT1）で起こし、起きた理由と眠っていた時間を出す | 極限の省電力＆ULP |
 | `ulp-deep-sleep/ulp_button_count` | ESP32-S3: ULP RISC-V が 20ms ごとに GPIO0 を見て、3 回押されたらメインの CPU を起こす | 同上 |
+| `ulp-deep-sleep/lis3dh_wakeup` | ESP32-S3: LIS3DH（I2C）に動きの検知を INT1 に出す設定を入れ、INT1（EXT1）・GPIO0（EXT0）・タイマで Deep Sleep から起こす | 同上 |
 | `twai-can/can_node` | ESP32-S3 と ESP32-P4: esp_twai（v6.0）で CAN の 1 マスタ＋スレーブ。受け入れフィルタ、バスオフからの復帰。トランシーバなしのセルフテストも（ボードは `sdkconfig.esp32s3`・`sdkconfig.esp32p4`・`sdkconfig.esp32p4_rev1`、役割は `sdkconfig.master`・`sdkconfig.slave1`〜`3`。下の「can_node のビルド」） | 産業用バス TWAI/CAN |
 | `fft-s3-vs-p4/fft_bench` | ESP-DSP（1.8.2）の FFT（fc32 基数 2・4、sc16 基数 2、C の版と最適化版）のサイクル数を、合成の sin 波で 1024／4096 点。S3 と P4 のプリセット | ESP-DSP で FFT の速さを測る |
 | `fft-s3-vs-p4/fft2r_check` | dsps_fft2r_fc32（1024 点）のサイクル数を、条件（割り込み・計る順・データと表の置き場所・クロック・入力の値）を 1 つずつ変えて計る。公表値とのずれを調べる | ESP-DSP で FFT の速さを測る |
