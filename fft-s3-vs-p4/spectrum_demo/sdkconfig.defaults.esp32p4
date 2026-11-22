@@ -1,0 +1,3 @@
+# ESP32-P4X-Function-EV-Board（チップ rev v3.2）: 既定の 400MHz のまま
+# スペクトルを多く出すので、コンソールを USB Serial/JTAG（P4X の J19）だけにする（2 つ目のコンソールのままだと出し切れない分が捨てられる）
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
