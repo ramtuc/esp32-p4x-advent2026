@@ -107,7 +107,7 @@ static void lis3dh_setup_motion_int1(void)
     ESP_ERROR_CHECK(lis3dh_write(REG_INT1_DURATION, 0x00)); /* 1 回でも超えたら */
     ESP_ERROR_CHECK(lis3dh_write(REG_CTRL_REG5, 0x08)); /* INT1 をラッチ（INT1_SRC を読むまで High のまま） */
     ESP_ERROR_CHECK(lis3dh_write(REG_INT1_CFG, 0x2A));  /* X・Y・Z のどれかが「しきい値より上」（OR） */
-    ESP_ERROR_CHECK(lis3dh_write(REG_CTRL_REG3, 0x40)); /* 割り込み 1（AOI1）を INT1 のピンに出す */
+    ESP_ERROR_CHECK(lis3dh_write(REG_CTRL_REG3, 0x40)); /* 割り込み 1 の判定を INT1 のピンに出す */
 }
 
 static uint8_t lis3dh_clear_int1(void)
